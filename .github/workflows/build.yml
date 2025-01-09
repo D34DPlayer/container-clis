@@ -17,6 +17,7 @@ jobs:
       should_build: ${{ steps.check.outputs.should_build }}
       litecli_version: ${{ steps.check.outputs.litecli_version }}
     steps:
+      - uses: actions/checkout@v4
       - uses: jorgebg/stateful-action@v0.1
       - name: Check if litecli has a new version on PyPI
         id: check
@@ -35,6 +36,7 @@ jobs:
     needs: should-build
     if: ${{ needs.should-build.outputs.should_build == 'true' }}
     steps:
+      - uses: actions/checkout@v4
       - uses: jorgebg/stateful-action@v0.1
       - name: Docker meta
         id: meta
