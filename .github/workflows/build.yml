@@ -1,0 +1,67 @@
+name: Build docker image
+on:
+  push:
+    branches:
+    - main
+  schedule:
+    # Check if new version is available every Monday at 00:00
+    - cron: "0 0 * * 1"
+
+env:
+  DOCKER_IMAGE: d34dplayer/litecli
+
+jobs:
+  should-build:
+    runs-on: ubuntu-latest
+    outputs:
+      should_build: ${{ steps.check.outputs.should_build }}
+      litecli_version: ${{ steps.check.outputs.litecli_version }}
+    steps:
+      - uses: jorgebg/stateful-action@v0.1
+      - name: Check if litecli has a new version on PyPI
+        id: check
+        run: |
+          STATE_VERSION=$(cat .state/litecli_version)
+          LATEST_VERSION=$(curl -s https://pypi.org/pypi/litecli/json | jq -r '.info.version')
+          
+          printf "litecli_version=$LATEST_VERSION" >> $GITHUB_OUTPUT
+          if [[ "$STATE_VERSION" != "$LATEST_VERSION" || - n "${{ github.event.inputs.push }}" ]]; then
+            printf "should_build=true" >> $GITHUB_OUTPUT
+          else
+            printf "should_build=false" >> $GITHUB_OUTPUT
+          fi
+  build:
+    runs-on: ubuntu-latest
+    needs: should-build
+    if: ${{ needs.should-build.outputs.should_build == 'true' }}
+    steps:
+      - uses: jorgebg/stateful-action@v0.1
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.DOCKER_IMAGE }}
+          tags: |
+            type=raw,value=latest
+            type=raw,value=${{ needs.should-build.outputs.litecli_version }}
+            type=schedule
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: LITECLI_VERSION=${{ needs.should-build.outputs.litecli_version }}
+      - name: Update state
+        run: printf "${{ needs.should-build.outputs.litecli_version }}" > .state/litecli_version
