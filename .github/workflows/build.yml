@@ -3,6 +3,8 @@ on:
   push:
     branches:
     - main
+    paths:
+    - '!README.md'
   schedule:
     # Check if new version is available every Monday at 00:00
     - cron: "0 0 * * 1"

@@ -37,4 +37,6 @@ litecli() {
         ghcr.io/d34dplayer/litecli:latest \
         /mnt/database.db
 }
+
+litecli ./unicorns.db
 ```
