@@ -10,20 +10,20 @@ The documentation for `litecli` can be found on their website: https://litecli.c
 # Connect to a local database
 docker run --rm -ti \
     -v $(pwd)/unicorns.db:/mnt/unicorns.db \
-    d34dplayer/litecli:latest \
+    ghcr.io/d34dplayer/litecli:latest \
     /mnt/unicorns.db
 
 # Connect to a database in a volume
 docker run --rm -ti \
     -v unicorn-data:/mnt \
-    d34dplayer/litecli:latest \
+    ghcr.io/d34dplayer/litecli:latest \
     /mnt/unicorns.db
 
 # With configuration and persistent history
 docker run --rm -ti \
     -v $HOME/.config/litecli:/root/.config/litecli \
     -v $(pwd)/unicorns.db:/mnt/unicorns.db \
-    d34dplayer/litecli:latest \
+    ghcr.io/d34dplayer/litecli:latest \
     /mnt/unicorns.db
 
 # Bash function for easy access
