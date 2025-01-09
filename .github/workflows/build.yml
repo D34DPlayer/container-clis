@@ -8,7 +8,7 @@ on:
     - cron: "0 0 * * 1"
 
 env:
-  DOCKER_IMAGE: d34dplayer/litecli
+  DOCKER_IMAGE: ghcr.io/d34dplayer/litecli
 
 jobs:
   should-build:
