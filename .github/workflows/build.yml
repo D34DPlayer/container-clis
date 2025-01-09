@@ -26,7 +26,7 @@ jobs:
           LATEST_VERSION=$(curl -s https://pypi.org/pypi/litecli/json | jq -r '.info.version')
           
           printf "litecli_version=$LATEST_VERSION" >> $GITHUB_OUTPUT
-          if [[ "$STATE_VERSION" != "$LATEST_VERSION" || - n "${{ github.event.inputs.push }}" ]]; then
+          if [[ "$STATE_VERSION" != "$LATEST_VERSION" || -n "${{ github.event.inputs.push }}" ]]; then
             printf "should_build=true" >> $GITHUB_OUTPUT
           else
             printf "should_build=false" >> $GITHUB_OUTPUT
