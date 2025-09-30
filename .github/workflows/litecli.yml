@@ -49,6 +49,7 @@ jobs:
       - build-and-push
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v5
       - uses: jorgebg/stateful-action@v0.3
       - name: Update state
         run: printf "${{ needs.should-build.outputs.litecli_version }}" > .state/litecli_version
