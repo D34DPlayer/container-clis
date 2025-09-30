@@ -1,0 +1,58 @@
+name: Build iredis docker image
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/iredis.yml'
+      - 'iredis/'
+      - '!**/README.md'
+  schedule:
+    # Check if new version is available every Monday at 00:00
+    - cron: "0 0 * * 1"
+  workflow_dispatch:
+jobs:
+  should-build:
+    runs-on: ubuntu-latest
+    outputs:
+      should_build: ${{ steps.check.outputs.should_build }}
+      iredis_version: ${{ steps.check.outputs.iredis_version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: jorgebg/stateful-action@v0.3
+      - name: Check if iredis has a new version on PyPI
+        id: check
+        run: |
+          STATE_VERSION=$(cat .state/iredis_version || true)
+          LATEST_VERSION=$(curl -s https://pypi.org/pypi/iredis/json | jq -r '.info.version')
+
+          echo "iredis_version=$LATEST_VERSION" >> $GITHUB_OUTPUT
+          if [[ "$STATE_VERSION" != "$LATEST_VERSION" || "${{ github.event_name }}" != "schedule" ]]; then
+            echo "should_build=true" >> $GITHUB_OUTPUT
+          else
+            echo "should_build=false" >> $GITHUB_OUTPUT
+          fi
+  build-and-push:
+    needs:
+      - should-build
+    if: ${{ needs.should-build.outputs.should_build == 'true' }}
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/build.template.yml
+    with:
+      docker_image: ghcr.io/d34dplayer/iredis
+      dockerfile: iredis/Dockerfile
+      version: ${{ needs.should-build.outputs.iredis_version }}
+  update-state:
+    needs:
+      - should-build
+      - build-and-push
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: jorgebg/stateful-action@v0.3
+      - name: Update state
+        run: printf "${{ needs.should-build.outputs.iredis_version }}" > .state/iredis_version
