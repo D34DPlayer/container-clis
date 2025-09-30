@@ -5,6 +5,9 @@ on:
       docker_image:
         required: true
         type: string
+      dockerfile:
+        required: true
+        type: string
       version:
         required: true
         type: string
@@ -43,6 +46,7 @@ jobs:
         with:
           platforms: linux/amd64,linux/arm64
           push: true
+          file: ${{ inputs.dockerfile }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: VERSION=${{ inputs.version }}

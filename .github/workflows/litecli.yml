@@ -41,6 +41,7 @@ jobs:
     uses: ./.github/workflows/build.template.yml
     with:
       docker_image: ghcr.io/d34dplayer/litecli
+      dockerfile: litecli/Dockerfile
       version: ${{ needs.should-build.outputs.litecli_version }}
   update-state:
     needs:

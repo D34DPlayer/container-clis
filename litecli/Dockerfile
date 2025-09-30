@@ -1,8 +1,8 @@
 FROM python:3.13-alpine
 
-ARG LITECLI_VERSION
+ARG VERSION
 
-RUN pip install litecli==$LITECLI_VERSION
+RUN pip install litecli==$VERSION
 
 ENTRYPOINT ["litecli"]
 CMD ["--help"]
