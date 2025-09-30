@@ -8,9 +8,6 @@ on:
       version:
         required: true
         type: string
-    secrets:
-      GITHUB_TOKEN:
-        required: true
 env:
   DOCKER_IMAGE: ghcr.io/d34dplayer/litecli
 jobs:

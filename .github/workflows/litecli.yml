@@ -39,8 +39,6 @@ jobs:
     with:
       docker_image: ghcr.io/d34dplayer/litecli
       version: ${{ needs.should-build.outputs.litecli_version }}
-    secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   update-state:
     needs:
       - should-build
