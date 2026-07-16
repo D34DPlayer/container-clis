@@ -6,4 +6,5 @@ Repo where I build regular container versions of CLI utilities I use
 
 - [litecli](./litecli/README.md): SQLite CLI
 - [pgcli](./pgcli/README.md): Postgres CLI
+- [dslr](./dslr/README.md): Postgres snapshotting CLI
 - [iredis](./iredis/README.md): Redis CLI
